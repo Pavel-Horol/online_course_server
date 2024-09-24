@@ -7,4 +7,4 @@ const TokenSchema = new Schema({
 
 })
 
-export default model("User", TokenSchema)
+export default model("Token", TokenSchema)
