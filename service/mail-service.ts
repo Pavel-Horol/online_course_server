@@ -13,14 +13,6 @@ class MailService {
                 pass: process.env.SMTP_PASSWORD
             }
         });
-        console.log("Mail service")
-        console.table({
-            host: process.env.SMTP_HOST,
-            port: Number(process.env.SMTP_PORT),
-            secure: false,
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASSWORD
-        })
     }
     async sendActivationMail(to: string, link: string) {
         try{
