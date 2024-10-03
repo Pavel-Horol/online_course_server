@@ -20,6 +20,7 @@ class UserService {
         const userDto = new UserDto(user)
         const tokens = tokenService.generateTokens({...userDto})
         await tokenService.saveToken(userDto.id, tokens.refreshToken)
+
         return { ...tokens, user: userDto }
     }
 
@@ -52,15 +53,16 @@ class UserService {
     async refresh(refreshToken: string) {
         if(!refreshToken) { throw ApiError.UnauthorizedError(); }
 
-        const userData = await tokenService.validateRefreshToken(refreshToken)
+        const userData    = await tokenService.validateRefreshToken(refreshToken)
         const tokenFromDB = await tokenService.findToken(refreshToken)
-        if(!userData || !tokenFromDB) { throw ApiError.UnauthorizedError(); }
-
+        
+        if(!userData || !tokenFromDB) { 
+            throw new Error("Some error in user refresh")
+        }
         //@ts-ignore
         const user = await UserModel.findById(userData.id!)
         const userDto = new UserDto(user)
         const tokens = tokenService.generateTokens({...userDto})
-
         await tokenService.saveToken(userDto.id, tokens.refreshToken);
         return {...tokens, user: userDto}
     }

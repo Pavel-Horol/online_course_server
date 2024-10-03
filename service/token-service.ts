@@ -4,7 +4,7 @@ import tokenModel from '../models/token-model'
 class TokenService{
     generateTokens(payload: any): {accessToken: string, refreshToken: string} {
         const accessToken = jwt.sign(payload, process.env.JWT_ACCESS_SECRET!, {expiresIn: '10m'})
-        const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, {expiresIn: '1d'})
+        const refreshToken = jwt.sign(payload, process.env.JWT_REFRESH_SECRET!, {expiresIn: '1h'})
         return {
             accessToken,
             refreshToken
@@ -27,7 +27,7 @@ class TokenService{
         try{
             return jwt.verify(token, process.env.JWT_ACCESS_SECRET!)
         } catch (e) {
-
+            return null
         }
     }
 
@@ -40,7 +40,8 @@ class TokenService{
     }
 
     async findToken(refreshToken: string) {
-        const tokenData = await tokenModel.findOne({refreshToken})
+        const tokenData = await tokenModel.findOne({ refreshToken})
+        const tokensData = await tokenModel.find()
         return tokenData
     }
 }
