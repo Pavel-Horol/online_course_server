@@ -16,7 +16,7 @@ export default class UserService {
             
             const user = await userModel.findById(tokenData.user?._id)
             const userDto =  new UserDto(user)
-            const tokens = TokenService.generate(userDto)
+            const tokens = TokenService.generate<UserDto>(userDto)
             await TokenService.save(user._id, tokens.refreshToken)
             return {
                 user: userDto,
@@ -36,7 +36,7 @@ export default class UserService {
             if(!isPasswordCompare) { throw ApiError.BadRequest('Password does not match') }
                         
             const userDto = new UserDto(user)
-            const tokens = TokenService.generate(userDto)
+            const tokens = TokenService.generate<UserDto>(userDto)
             await TokenService.save(user.id, tokens.refreshToken)
             
             return {
@@ -57,7 +57,7 @@ export default class UserService {
             const user =         await userModel.create({email, password: hashPassword})
 
             const userDto = new UserDto(user)
-            const tokens =  TokenService.generate(userDto)
+            const tokens =  TokenService.generate<UserDto>(userDto)
 
             return {user: userDto, ...tokens}
         }catch(error) {

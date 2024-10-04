@@ -65,7 +65,7 @@ class UserController {
 
     async users(req: Request, res: Response, next: NextFunction) {
         try {
-        
+            return res.json({users: ['pasha', 'sasha']})
         } catch (error) {
             next(error) 
         } 

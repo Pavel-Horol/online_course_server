@@ -16,7 +16,6 @@ export default class TokenService {
             process.env.JWT_REFRESH_SECRET!,
             {expiresIn: process.env.JWT_REFRESH_EXPIRES!}
         )
-
         return {
             accessToken,
             refreshToken
@@ -47,6 +46,7 @@ export default class TokenService {
             throw error
         }
     }
+
     static async validateRefresh(token: string) {
         try {
             const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET!);
@@ -55,6 +55,16 @@ export default class TokenService {
             return null;
         }
     }
+
+    static async validateAccess(token: string) {
+        try {
+            const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET!);
+            return userData;
+        } catch (e) {
+            return null;
+        }
+    }
+
     static async findRefresh(token: string) {
         const tokenData = tokenModel.findOne({refreshToken: token})
         return tokenData
