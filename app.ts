@@ -3,15 +3,18 @@ dotenv.config();
 
 import express, {Express, Request, Response, Application, NextFunction} from 'express';
 import cookieParser  from 'cookie-parser'
-import mongoose from 'mongoose';
 import cors from 'cors'
 import router from './router';
-import errorMiddleware from "./middlewares/error-middleware";
+import database from './setup/db.setup';
+import errorMiddleware from './middlewares/error-middleware';
 
 const secretKey = process.env.JWT_SECRET_KEY;
 const port      = process.env.PORT || 8000;
 
 const app: Application = express();
+
+
+
 app.use(cookieParser())
 app.use(express.json())
 app.use(cors({
@@ -20,10 +23,9 @@ app.use(cors({
 }))
 app.use('/api', router)
 app.use(errorMiddleware)
-
 const start = async () => {
     try{
-        await mongoose.connect(process.env.MONGODB_CONNECTION_STRING!, {})
+        database()
         app.listen(port, () => {
             console.log(`Server is Fire at http://localhost:${port}`);
         });

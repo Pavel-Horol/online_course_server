@@ -1,13 +1,10 @@
+import { ObjectId } from "mongoose";
+
 class UserDto {
     email;
     id;
     isActivated;
-
-    constructor
-    (model: {
-        email: string,
-        _id: string,
-        isActivated: boolean}) 
+    constructor (model: { email: string, _id: ObjectId, isActivated: boolean}) 
         {
         this.email = model.email;
         this.id = model._id;
