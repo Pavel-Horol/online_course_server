@@ -3,6 +3,7 @@ import { AuthRequest } from "../types/auth.type";
 import { ApiError } from "../exceptions/api-error";
 import UserService from "../service/user.service";
 import { cookieConfig } from "../setup/cookie.setup";
+import UserDto from '../dto/user-dto';
 
 class UserController {
     async registration(req: AuthRequest, res: Response, next: NextFunction) {
@@ -51,7 +52,10 @@ class UserController {
 
     async refresh(req: Request, res: Response, next: NextFunction) {
         try {
-        
+            const {refreshToken} = req.cookies
+            const userData = await UserService.refresh(refreshToken)
+            res.cookie('refreshToken', userData.refreshToken, cookieConfig)
+            return res.json({user: userData.user, accessToken: userData.accessToken})
         } catch (error) {
             next(error) 
         } 

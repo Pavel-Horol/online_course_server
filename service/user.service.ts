@@ -6,6 +6,26 @@ import TokenService from "./token.service";
 import UserDto from '../dto/user-dto';
 
 export default class UserService {
+    static async refresh(refreshToken: string) {
+        try {
+            if(!refreshToken) { throw ApiError.UnauthorizedError()}
+
+            const tokenData = await TokenService.findRefresh(refreshToken)
+            const tokenPayload = await TokenService.validateRefresh(refreshToken)
+            if(!tokenPayload || !tokenData) { throw ApiError.UnauthorizedError() }
+            
+            const user = await userModel.findById(tokenData.user?._id)
+            const userDto =  new UserDto(user)
+            const tokens = TokenService.generate(userDto)
+            await TokenService.save(user._id, tokens.refreshToken)
+            return {
+                user: userDto,
+                ...tokens
+            }
+        } catch (error) {
+            throw error
+        }
+    }
     static async login(email: string, password: string) {
         try {
             const user = await userModel.findOne({email})
@@ -45,5 +65,5 @@ export default class UserService {
         }
 
     }
-
+    
 }
