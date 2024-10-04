@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
-import { AuthRequest } from "../types/auth.type";
+import { AuthRequest } from "../types/auth-type";
 import { ApiError } from "../exceptions/api-error";
-import UserService from "../service/user.service";
-import { cookieConfig } from "../setup/cookie.setup";
+import UserService from "../service/user-service";
+import { cookieConfig } from "../setup/cookie-setup";
 import UserDto from '../dto/user-dto';
 
 class UserController {
@@ -12,6 +12,8 @@ class UserController {
             if(!email || !password) {
                 throw ApiError.BadRequest("Missing required fields")
             }
+
+
             const {refreshToken, ...userData} = await UserService.registration(email, password)
             res.cookie('refreshToken', refreshToken, cookieConfig)
             return res.status(201).json(userData)

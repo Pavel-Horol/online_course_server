@@ -5,7 +5,7 @@ import express, {Express, Request, Response, Application, NextFunction} from 'ex
 import cookieParser  from 'cookie-parser'
 import cors from 'cors'
 import router from './router';
-import database from './setup/db.setup';
+import database from './setup/db-setup';
 import errorMiddleware from './middlewares/error-middleware';
 
 const secretKey = process.env.JWT_SECRET_KEY;

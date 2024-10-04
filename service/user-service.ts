@@ -2,7 +2,7 @@ import { TokenExpiredError } from "jsonwebtoken";
 import { ApiError } from "../exceptions/api-error";
 import userModel from "../models/user-model";
 import bcrypt from 'bcrypt';
-import TokenService from "./token.service";
+import TokenService from "./token-service";
 import UserDto from '../dto/user-dto';
 
 export default class UserService {
