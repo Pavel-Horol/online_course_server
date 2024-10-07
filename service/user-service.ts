@@ -58,6 +58,7 @@ export default class UserService {
 
             const userDto = new UserDto(user)
             const tokens =  TokenService.generate<UserDto>(userDto)
+            await TokenService.save(user.id, tokens.refreshToken)
 
             return {user: userDto, ...tokens}
         }catch(error) {
