@@ -34,12 +34,13 @@ class PostsController {
             if(!id) {return next(ApiError.BadRequest('Post id not provided'))}
 
             const postToDelete = await postModel.findById(id) 
+
             if(!postToDelete) { return next(ApiError.BadRequest('Post not found'))}
-            
-            if(postToDelete.author.toString() !== user.id){return next(ApiError.BadRequest('You have no permission to delete this post'))}
+            if(postToDelete.author.toString() !== user.id){return next(ApiError.ForbiddenError())}
             
             await postModel.findByIdAndDelete(id)
             res.status(200).json({message: 'Post deleted successfully.'})
+
         } catch (error) {
            return next(error) 
         }
@@ -66,6 +67,7 @@ class PostsController {
             next(error)
         }
     }
+
     async getOne(req: Request, res: Response, next: NextFunction) {
         try {
             const user = req.user 
@@ -74,11 +76,35 @@ class PostsController {
             const {id} = req.params
             if(!id) {return next(ApiError.BadRequest('Post id not provided'))}
 
-
             const post = await postModel.findById(id) 
             if(!post) { return next(ApiError.BadRequest('Post not found'))}
 
             res.status(200).json(post)
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    async edit(req: Request, res: Response, next: NextFunction){
+        try {
+            const {title, content } = req.body
+            const user = req.user 
+            const {id} = req.params
+
+            if(!user) { return next(ApiError.UnauthorizedError())}
+            if(!id) {return next(ApiError.BadRequest('Post id not provided'))}
+            if(!content && !title) {return next(ApiError.BadRequest('No data provided')) }
+
+            const post = await postModel.findById(id)
+
+            if(!post){ return next(ApiError.BadRequest('Post not found'))}
+            if (post.author.toString() !== user.id) { return next(ApiError.ForbiddenError()); }
+
+            if(title) post.title = title
+            if(content) post.content = content
+            
+            const updatedPost = await post.save()
+            return res.status(200).json(updatedPost)
         } catch (error) {
             next(error)
         }

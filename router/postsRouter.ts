@@ -10,4 +10,6 @@ postsRouter.delete('/delete/:id', PostsController.delete)
 postsRouter.get('/all', PostsController.getAll)
 postsRouter.get('/one', PostsController.getOne)
 postsRouter.get('/byUser/:id', PostsController.getUsers)
+postsRouter.patch('/edit/:id', PostsController.edit)
+
 export default postsRouter
