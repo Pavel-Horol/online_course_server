@@ -1,18 +1,11 @@
 import { Router } from "express";
-import UserController from "../controller/user-controller";
+import authRouter from "./authRouter";
+import postsRouter from "./postsRouter";
 import authMiddleware from "../middlewares/auth-middleware";
 
 const router: Router = Router();
 
-router.post('/registration', UserController.registration)
-router.post('/login', UserController.login)
-router.post('/logout', UserController.logout)
-router.get('/activate/:link', UserController.activate)
-router.get('/refresh', UserController.refresh)
-
-router.get('/users',
-    authMiddleware,
-    UserController.users
-)
+router.use('/auth' , authRouter)
+router.use('/posts', authMiddleware ,postsRouter)
 
 export default router

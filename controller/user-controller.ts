@@ -3,7 +3,6 @@ import { AuthRequest } from "../types/auth-type";
 import { ApiError } from "../exceptions/api-error";
 import UserService from "../service/user-service";
 import { cookieConfig } from "../setup/cookie-setup";
-import UserDto from '../dto/user-dto';
 
 class UserController {
     async registration(req: AuthRequest, res: Response, next: NextFunction) {
@@ -65,7 +64,7 @@ class UserController {
 
     async users(req: Request, res: Response, next: NextFunction) {
         try {
-            return res.json({users: ['pasha', 'sasha']})
+            return res.json('will be soon')
         } catch (error) {
             next(error) 
         } 

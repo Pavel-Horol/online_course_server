@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiError } from "../exceptions/api-error";
 import TokenService from "../service/token-service";
-import tokenModel from "../models/token-model";
 
 export default async function authMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
@@ -19,9 +18,7 @@ export default async function authMiddleware(req: Request, res: Response, next: 
         if(!userData) {
             return next(ApiError.UnauthorizedError())
         }
-        //@ts-ignore
-        console.log(userData.payload)
-        req.body = userData
+        req.user = userData.payload  
         next();
     } catch(error) {
         return next(ApiError.UnauthorizedError())

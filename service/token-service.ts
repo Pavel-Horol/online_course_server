@@ -1,4 +1,4 @@
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { ObjectId } from 'mongodb';
 import tokenModel from '../models/token-model';
 import { ApiError } from '../exceptions/api-error';
@@ -16,6 +16,8 @@ export default class TokenService {
             process.env.JWT_REFRESH_SECRET!,
             {expiresIn: process.env.JWT_REFRESH_EXPIRES!}
         )
+        console.log(process.env.JWT_REFRESH_EXPIRES)
+        console.log(process.env.JWT_ACCESS_EXPIRES)
         return {
             accessToken,
             refreshToken
@@ -49,17 +51,17 @@ export default class TokenService {
 
     static async validateRefresh(token: string) {
         try {
-            const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET!);
+            const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET!, {ignoreExpiration: false});
             return userData;
         } catch (e) {
             return null;
         }
     }
 
-    static async validateAccess(token: string) {
+    static async validateAccess(token: string): Promise<JwtPayload | null> {
         try {
-            const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET!);
-            return userData;
+            const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET!, {ignoreExpiration: false}) as JwtPayload;
+            return userData; 
         } catch (e) {
             return null;
         }
