@@ -12,7 +12,7 @@ const UserSchema = new Schema({
         default: ['user']
     },
     isActivated: {type: Boolean, default: false},
-    // activationLink: {type: String},
+    activationLink: {type: String},
 })
 
 
