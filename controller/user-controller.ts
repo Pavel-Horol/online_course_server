@@ -11,8 +11,6 @@ class UserController {
             if(!email || !password) {
                 throw ApiError.BadRequest("Missing required fields")
             }
-
-
             const {refreshToken, ...userData} = await UserService.registration(email, password)
             res.cookie('refreshToken', refreshToken, cookieConfig)
             return res.status(201).json(userData)
@@ -47,7 +45,7 @@ class UserController {
         try {
             const activationLink = req.params.link
             await UserService.activate(activationLink)
-            return res.redirect(process.env.CLIENT_URL!)
+            return res.redirect(`${process.env.CLIENT_URL!}/profile`)
         } catch (error) {
             next(error) 
         } 
@@ -64,14 +62,24 @@ class UserController {
         } 
     }
 
-    async users(req: Request, res: Response, next: NextFunction) {
+    async profile(req: Request, res: Response, next: NextFunction) {
         try {
-            return res.json('will be soon')
+            const userData = await UserService.profile(req.user.id)
+            return res.status(200).json(userData)
         } catch (error) {
             next(error) 
         } 
     }
 
+    async getActivationLink (req: Request, res: Response, next: NextFunction){
+        try{
+            const userId = req.user.id
+            await UserService.activateLink(userId)
+            res.sendStatus(200)
+        } catch(error){
+            next(error)
+        }
+    }
 }
 
 export default new UserController()

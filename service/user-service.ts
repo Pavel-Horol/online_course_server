@@ -8,6 +8,9 @@ import { v4 } from "uuid";
 import mailService from "./mail-service";
 
 class UserService {
+    async profile(id: string) {
+        return await userModel.findById(id)
+    }
     async activate(activationLink: string) {
         const user = await userModel.findOne({activationLink})
         if(!user) { throw ApiError.BadRequest('Incorrect link for activation')}
@@ -78,6 +81,15 @@ class UserService {
             throw error
         }
 
+    }
+    
+    async activateLink(userId: string){
+        try {
+            const user = await userModel.findById(userId)
+            await mailService.sendActivationMail(user.email, `${process.env.API_URL}/api/auth/activate/${user.activationLink}`)
+        } catch (error) {
+            throw error 
+        }
     }
     
 }
