@@ -4,9 +4,18 @@ import userModel from "../models/user-model";
 import bcrypt from 'bcrypt';
 import TokenService from "./token-service";
 import UserDto from '../dto/user-dto';
+import { v4 } from "uuid";
+import mailService from "./mail-service";
 
-export default class UserService {
-    static async refresh(refreshToken: string) {
+class UserService {
+    async activate(activationLink: string) {
+        const user = await userModel.findOne({activationLink})
+        if(!user) { throw ApiError.BadRequest('Incorrect link for activation')}
+        user.isActivated = true
+        await user.save()
+    }
+
+    async refresh(refreshToken: string) {
         try {
             if(!refreshToken) { throw ApiError.UnauthorizedError()}
 
@@ -26,7 +35,8 @@ export default class UserService {
             throw error
         }
     }
-    static async login(email: string, password: string) {
+
+    async login(email: string, password: string) {
         try {
             const user = await userModel.findOne({email})
             if(!user) { throw ApiError.BadRequest("User does not exist")}
@@ -48,18 +58,21 @@ export default class UserService {
         }
     }
 
-    static async registration(email: string, password: string) {
+    async registration(email: string, password: string) {
         try{
             const isUserExist = await userModel.findOne({email})
             if(isUserExist) { throw ApiError.BadRequest("User already exist")}
             
             const hashPassword = await bcrypt.hash(password, 6)
-            const user =         await userModel.create({email, password: hashPassword})
+            const activationLink = v4()          
+
+            const user = await userModel.create({email, password: hashPassword, activationLink})
+            await mailService.sendActivationMail(email, `${process.env.API_URL}/api/activate/${activationLink}`)            
 
             const userDto = new UserDto(user)
             const tokens =  TokenService.generate<UserDto>(userDto)
-            await TokenService.save(user.id, tokens.refreshToken)
 
+            await TokenService.save(user.id, tokens.refreshToken)
             return {user: userDto, ...tokens}
         }catch(error) {
             throw error
@@ -68,3 +81,5 @@ export default class UserService {
     }
     
 }
+
+export default new UserService()
