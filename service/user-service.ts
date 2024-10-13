@@ -91,7 +91,10 @@ class UserService {
             throw error 
         }
     }
-    
+   
+    async uploadPhoto() {
+        
+    }
 }
 
 export default new UserService()

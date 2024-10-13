@@ -7,12 +7,13 @@ import cors from 'cors'
 import router from './router';
 import database from './setup/db-setup';
 import errorMiddleware from './middlewares/error-middleware';
+import multer, { diskStorage } from 'multer'
+import path from 'path'
 
 const secretKey = process.env.JWT_SECRET_KEY;
 const port      = process.env.PORT || 8000;
 
 const app: Application = express();
-
 
 
 app.use(cookieParser())
@@ -23,7 +24,6 @@ app.use(cors({
 }))
 
 app.use('/api', router)
-
 app.use(errorMiddleware)
 
 const start = async () => {

@@ -7,10 +7,9 @@ class PostsController {
         try {
             
             const user = req.user 
+            const {title, content} = req.body
             
             if(!user) { return next(ApiError.UnauthorizedError())}
-
-            const {title, content} = req.body
             if(!title || !content) { return next(ApiError.BadRequest('Title and content are required.'))}
         
             const newPost = await postModel.create({
@@ -18,8 +17,8 @@ class PostsController {
                 content,
                 author: user.id
             })
-        
             return res.status(201).json(newPost)
+
         } catch (error) {
            return next(error) 
         }
@@ -28,13 +27,11 @@ class PostsController {
     async delete(req: Request, res: Response, next: NextFunction) {
         try {
             const user = req.user 
-            if(!user) { return next(ApiError.UnauthorizedError())}
-            
             const {id} = req.params
-            if(!id) {return next(ApiError.BadRequest('Post id not provided'))}
-
             const postToDelete = await postModel.findById(id) 
 
+            if(!user) { return next(ApiError.UnauthorizedError())}
+            if(!id) {return next(ApiError.BadRequest('Post id not provided'))}
             if(!postToDelete) { return next(ApiError.BadRequest('Post not found'))}
             if(postToDelete.author.toString() !== user.id){return next(ApiError.ForbiddenError())}
             
@@ -61,8 +58,8 @@ class PostsController {
             if(!user) { return next(ApiError.UnauthorizedError())}
             
             const userPosts = await postModel.find({author: user.id})
-            
             return res.status(200).json(userPosts)
+
         } catch (error) {
             next(error)
         }
@@ -71,12 +68,11 @@ class PostsController {
     async getOne(req: Request, res: Response, next: NextFunction) {
         try {
             const user = req.user 
-            if(!user) { return next(ApiError.UnauthorizedError())}
-            
             const {id} = req.params
-            if(!id) {return next(ApiError.BadRequest('Post id not provided'))}
-
             const post = await postModel.findById(id) 
+
+            if(!user) { return next(ApiError.UnauthorizedError())}
+            if(!id) {return next(ApiError.BadRequest('Post id not provided'))}
             if(!post) { return next(ApiError.BadRequest('Post not found'))}
 
             res.status(200).json(post)
@@ -96,7 +92,6 @@ class PostsController {
             if(!content && !title) {return next(ApiError.BadRequest('No data provided')) }
 
             const post = await postModel.findById(id)
-
             if(!post){ return next(ApiError.BadRequest('Post not found'))}
             if (post.author.toString() !== user.id) { return next(ApiError.ForbiddenError()); }
 
