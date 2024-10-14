@@ -80,12 +80,16 @@ class UserController {
             next(error)
         }
     }
-    async uploadPhoto (req: Request, res: Response, next: NextFunction){
+    async uploadPhoto(req: Request, res: Response, next: NextFunction){
         try {
             if(!req.file){ return res.status(400).json({message: 'No file uploaded'}) }
-            
+            const file = req.file
 
-            res.status(200).json({fileUrl})
+
+            res.send({
+                message :'Uploaded',
+                name: file.filename
+            })
         } catch (error) {
             next(error)
         }
