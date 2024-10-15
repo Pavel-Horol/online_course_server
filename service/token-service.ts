@@ -16,8 +16,6 @@ export default class TokenService {
             process.env.JWT_REFRESH_SECRET!,
             {expiresIn: process.env.JWT_REFRESH_EXPIRES!}
         )
-        console.log(process.env.JWT_REFRESH_EXPIRES)
-        console.log(process.env.JWT_ACCESS_EXPIRES)
         return {
             accessToken,
             refreshToken
