@@ -12,8 +12,4 @@ authRouter.get('/activate/:link', UserController.activate)
 authRouter.get('/refresh', UserController.refresh)
 authRouter.get('/profile', authMiddleware, UserController.profile)
 authRouter.get('/getActivationLink', authMiddleware, UserController.getActivationLink)
-authRouter.post('/uploadPhoto', 
-    authMiddleware,
-    upload.single('avatar'), 
-    UserController.uploadPhoto)
 export default authRouter
