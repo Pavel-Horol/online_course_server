@@ -25,11 +25,14 @@ class UserService {
             const tokenData = await TokenService.findRefresh(refreshToken)
             const tokenPayload = await TokenService.validateRefresh(refreshToken)
             if(!tokenPayload || !tokenData) { throw ApiError.UnauthorizedError() }
-            
-            const user = await userModel.findById(tokenData.user?._id)
+
+            const user = await userModel.findById(tokenData.user)
+            if(!user){ throw ApiError.UnauthorizedError()}
+
             const userDto =  new UserDto(user)
             const tokens = TokenService.generate<UserDto>(userDto)
             await TokenService.save(user._id, tokens.refreshToken)
+
             return {
                 user: userDto,
                 ...tokens
