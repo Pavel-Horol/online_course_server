@@ -1,103 +1,45 @@
-import { TokenExpiredError } from "jsonwebtoken";
-import { ApiError } from "../exceptions/api-error";
-import userModel from "../models/user-model";
+import { ApiError } from "@/exceptions/api-error"
+import userModel from "@/models/user-model"
+import User from "@/types/user-type";
 import bcrypt from 'bcrypt';
-import TokenService from "./token-service";
-import UserDto from '../dto/user-dto';
-import { v4 } from "uuid";
-import mailService from "./mail-service";
 
 class UserService {
-    async profile(id: string) {
-        return await userModel.findById(id)
-    }
-    async activate(activationLink: string) {
-        const user = await userModel.findOne({activationLink})
-        if(!user) { throw ApiError.BadRequest('Incorrect link for activation')}
-        user.isActivated = true
-        await user.save()
-    }
 
-    async refresh(refreshToken: string) {
-        try {
-            if(!refreshToken) { throw ApiError.UnauthorizedError()}
-
-            const tokenData = await TokenService.findRefresh(refreshToken)
-            const tokenPayload = await TokenService.validateRefresh(refreshToken)
-            if(!tokenPayload || !tokenData) { throw ApiError.UnauthorizedError() }
-
-            const user = await userModel.findById(tokenData.user)
-            if(!user){ throw ApiError.UnauthorizedError()}
-
-            const userDto =  new UserDto(user)
-            const tokens = TokenService.generate<UserDto>(userDto)
-            await TokenService.save(user._id, tokens.refreshToken)
-
-            return {
-                user: userDto,
-                ...tokens
-            }
-        } catch (error) {
-            throw error
-        }
-    }
-
-    async login(email: string, password: string) {
-        try {
-            const user = await userModel.findOne({email})
-            if(!user) { throw ApiError.BadRequest("User does not exist")}
-            
-            const isPasswordCompare = await bcrypt.compare(password, user.password)
-
-            if(!isPasswordCompare) { throw ApiError.BadRequest('Password does not match') }
-                        
-            const userDto = new UserDto(user)
-            const tokens = TokenService.generate<UserDto>(userDto)
-            await TokenService.save(user.id, tokens.refreshToken)
-            
-            return {
-                user: userDto,
-                ...tokens
-            }
-        } catch (error) {
-            throw error
-        }
-    }
-
-    async registration(email: string, password: string) {
-        try{
-            const isUserExist = await userModel.findOne({email})
-            if(isUserExist) { throw ApiError.BadRequest("User already exist")}
-            
-            const hashPassword = await bcrypt.hash(password, 6)
-            const activationLink = v4()          
-
-            const user = await userModel.create({email, password: hashPassword, activationLink})
-            await mailService.sendActivationMail(email, `${process.env.API_URL}/api/auth/activate/${activationLink}`)            
-
-            const userDto = new UserDto(user)
-            const tokens =  TokenService.generate<UserDto>(userDto)
-
-            await TokenService.save(user.id, tokens.refreshToken)
-            return {user: userDto, ...tokens}
-        }catch(error) {
-            throw error
-        }
-
-    }
-    
-    async activateLink(userId: string){
-        try {
-            const user = await userModel.findById(userId)
-            await mailService.sendActivationMail(user.email, `${process.env.API_URL}/api/auth/activate/${user.activationLink}`)
-        } catch (error) {
-            throw error 
-        }
-    }
-   
-    async uploadPhoto() {
+    async create (email: string, password: string, activationLink: string): Promise<User> {
+        if(await userModel.findOne({email})) throw ApiError.BadRequest('User already exists')
         
+        const hashPassword = await bcrypt.hash(password, 6);
+        const user = await userModel.create({
+            email,
+            password: hashPassword,
+            activationLink
+        })
+        return user;
     }
+
+    async findByEmail(email: string){
+        const user = await userModel.findOne({email})
+        if(!user) throw ApiError.BadRequest('User does not exist')
+        return user
+    }
+
+    async findById(id: string) {
+        const user = await userModel.findById(id);
+        if (!user) {
+            throw ApiError.BadRequest("User not found");
+        }
+        return user;
+    }
+
+    async activate(activationLink: string) {
+        const user = await userModel.findOne({ activationLink });
+        if (!user) {
+            throw ApiError.BadRequest("Invalid activation link");
+        }
+        user.isActivated = true;
+        await user.save();
+    }
+
 }
 
 export default new UserService()

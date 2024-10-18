@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ApiError } from "../exceptions/api-error";
-import TokenService from "../service/token-service";
+import tokenService from "../service/token-service";
 
 export default async function authMiddleware(req: Request, res: Response, next: NextFunction) {
     try {
@@ -14,7 +14,7 @@ export default async function authMiddleware(req: Request, res: Response, next: 
             return next(ApiError.UnauthorizedError())
         }
     
-        const userData = await TokenService.validateAccess(accessToken) 
+        const userData = await tokenService.validateAccess(accessToken) 
         if(!userData) {
             return next(ApiError.UnauthorizedError())
         }

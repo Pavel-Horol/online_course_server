@@ -1,3 +1,5 @@
+import { UserRole } from "@/enum/role.enum";
+import User from "@/types/user-type";
 import { ObjectId } from "mongoose";
 
 class UserDto {
@@ -5,12 +7,14 @@ class UserDto {
     id: ObjectId;
     isActivated: boolean;
     profileImage: string;
-    constructor (model: { email: string, _id: ObjectId, isActivated: boolean, profileImage: string}) 
+    roles: Array<UserRole>;
+    constructor (model: User) 
         {
         this.email = model.email;
         this.id = model._id;
         this.isActivated = model.isActivated
         this.profileImage = model.profileImage
+        this.roles = model.roles
     }
 }
 

@@ -4,8 +4,8 @@ import tokenModel from '../models/token-model';
 import { ApiError } from '../exceptions/api-error';
 
 
-export default class TokenService {
-    static generate <T>(payload: T) {
+class TokenService {
+     generate <T>(payload: T) {
         const accessToken = jwt.sign(
             {payload},
             process.env.JWT_ACCESS_SECRET!,
@@ -22,7 +22,7 @@ export default class TokenService {
         }
     }
 
-    static async save(userId: ObjectId, refreshToken: string) {
+    async save(userId: ObjectId, refreshToken: string) {
         try {
             const tokenData = await tokenModel.findOne({user: userId})
             if (tokenData) {
@@ -38,7 +38,7 @@ export default class TokenService {
         }
     }
 
-    static async remove(refreshToken: string) {
+    async remove(refreshToken: string) {
         try {
             const tokenData = await tokenModel.deleteOne({refreshToken})
             return tokenData
@@ -46,8 +46,8 @@ export default class TokenService {
             throw error
         }
     }
-
-    static async validateRefresh(token: string) {
+		
+    async validateRefresh(token: string) {
         try {
             const userData = jwt.verify(token, process.env.JWT_REFRESH_SECRET!, {ignoreExpiration: false});
             return userData;
@@ -56,7 +56,7 @@ export default class TokenService {
         }
     }
 
-    static async validateAccess(token: string): Promise<JwtPayload | null> {
+    async validateAccess(token: string): Promise<JwtPayload | null> {
         try {
             const userData = jwt.verify(token, process.env.JWT_ACCESS_SECRET!, {ignoreExpiration: false}) as JwtPayload;
             return userData; 
@@ -65,8 +65,10 @@ export default class TokenService {
         }
     }
 
-    static async findRefresh(token: string) {
+    async findRefresh(token: string) {
         const tokenData = tokenModel.findOne({refreshToken: token})
         return tokenData
     }
 }
+
+export default new TokenService()

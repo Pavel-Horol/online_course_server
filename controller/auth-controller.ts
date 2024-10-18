@@ -1,18 +1,15 @@
 import { NextFunction, Request, Response } from "express";
-import { AuthRequest } from "../types/auth-type";
-import { ApiError } from "../exceptions/api-error";
-import UserService from "../service/user-service";
-import { cookieConfig } from "../setup/cookie-setup";
+import authService from "@/service/auth-service";
+import { AuthRequest } from "@/types/auth-type";
+import { setCookie } from "@/utilities/auth-utils";
 
-class UserController {
+class AuthController {
     async registration(req: AuthRequest, res: Response, next: NextFunction) {
         try {
             const {email, password} = req.body
-            if(!email || !password) {
-                throw ApiError.BadRequest("Missing required fields")
-            }
-            const {refreshToken, ...userData} = await UserService.registration(email, password)
-            res.cookie('refreshToken', refreshToken, cookieConfig)
+            const {refreshToken, ...userData} = await authService.registration(email, password)
+
+            setCookie(res, 'refreshToken', refreshToken)
             return res.status(201).json(userData)
         } catch (error) {
             next(error) 
@@ -22,11 +19,9 @@ class UserController {
     async login(req: AuthRequest, res: Response, next: NextFunction) {
         try {
             const {email, password} = req.body
-            if(!email || !password) {
-                throw ApiError.BadRequest("Missing required fields")
-            }
-            const {refreshToken, ...userData} = await UserService.login(email, password)
-            res.cookie('refreshToken', refreshToken, cookieConfig)
+            const {refreshToken, ...userData} = await authService.login(email, password)
+
+            setCookie(res, 'refreshToken', refreshToken)
             return res.status(201).json(userData)
         } catch (error) {
             next(error) 
@@ -44,7 +39,7 @@ class UserController {
     async activate(req: Request, res: Response, next: NextFunction) {
         try {
             const activationLink = req.params.link
-            await UserService.activate(activationLink)
+            await authService.activate(activationLink)
             return res.redirect(`${process.env.CLIENT_URL!}/profile`)
         } catch (error) {
             next(error) 
@@ -54,8 +49,9 @@ class UserController {
     async refresh(req: Request, res: Response, next: NextFunction) {
         try {
             const {refreshToken} = req.cookies
-            const userData = await UserService.refresh(refreshToken)
-            res.cookie('refreshToken', userData.refreshToken, cookieConfig)
+            const userData = await authService.refresh(refreshToken)
+
+            setCookie(res, 'refreshToken', refreshToken)
             return res.json({user: userData.user, accessToken: userData.accessToken})
         } catch (error) {
             next(error) 
@@ -64,7 +60,7 @@ class UserController {
 
     async profile(req: Request, res: Response, next: NextFunction) {
         try {
-            const userData = await UserService.profile(req.user.id)
+            const userData = await authService.profile(req.user.id)
             return res.status(200).json(userData)
         } catch (error) {
             next(error) 
@@ -74,7 +70,7 @@ class UserController {
     async getActivationLink (req: Request, res: Response, next: NextFunction){
         try{
             const userId = req.user.id
-            await UserService.activateLink(userId)
+            await authService.activateLink(userId)
             res.sendStatus(200)
         } catch(error){
             next(error)
@@ -83,4 +79,4 @@ class UserController {
 
 }
 
-export default new UserController()
+export default new AuthController()

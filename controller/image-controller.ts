@@ -17,7 +17,6 @@ class ImageController {
             const snapshot = await uploadBytesResumable(storageRef, req.file.buffer, metadata)
         
             const downloadUrl = await getDownloadURL(snapshot.ref)
-            console.log('File successfully uploaded.');
             return res.send({
                 message: 'file uploaded to firebase storage',
                 name: req.file.originalname,
