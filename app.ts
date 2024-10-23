@@ -7,10 +7,10 @@ import cors from 'cors'
 import router from './router';
 import database from './setup/db-setup';
 import errorMiddleware from './middlewares/error-middleware';
+import swaggerUI from 'swagger-ui-express'
+import swaggerSpec from './setup/swagger-setup';
 
-const secretKey = process.env.JWT_SECRET_KEY;
-const port      = process.env.PORT || 8000;
-
+const port = process.env.PORT 
 const app: Application = express();
 
 
@@ -20,7 +20,7 @@ app.use(cors({
     credentials: true,
     origin: process.env.CLIENT_URL
 }))
-
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
 app.use('/api', router)
 app.use(errorMiddleware)
 

@@ -65,7 +65,7 @@ class AuthService {
             const activationLink = v4()          
             
             const user = await userService.create(email, password, activationLink)
-            await mailService.sendActivationMail(email, `${process.env.API_URL}/api/auth/activate/${activationLink}`)
+            await mailService.sendActivationMail(email, `${process.env.SERVER_URL}/api/auth/activate/${activationLink}`)
             
             const userDto = new UserDto(user);
             const tokens = tokenService.generate(userDto)
@@ -86,7 +86,7 @@ class AuthService {
     async activateLink(userId: string){
         try {
             const user = await userModel.findById(userId)
-            await mailService.sendActivationMail(user.email, `${process.env.API_URL}/api/auth/activate/${user.activationLink}`)
+            await mailService.sendActivationMail(user.email, `${process.env.SERVER_URL}/api/auth/activate/${user.activationLink}`)
         } catch (error) {
             throw error 
         }

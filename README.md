@@ -1,8 +1,8 @@
 
 
 # App
-API_URL=http://localhost:5000
 PORT=5000
+SERVER_URL=http://localhost:5000
 CLIENT_URL=http://localhost:5173
 
 # JWT
