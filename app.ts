@@ -18,7 +18,9 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(cors({
     credentials: true,
-    origin: process.env.CLIENT_URL
+    // origin: process.env.CLIENT_URL,
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE']
 }))
 app.use(helmet.contentSecurityPolicy({
     directives: {
