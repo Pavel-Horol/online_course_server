@@ -9,7 +9,7 @@ import database from './setup/db-setup';
 import errorMiddleware from './middlewares/error-middleware';
 import swaggerUI from 'swagger-ui-express'
 import swaggerSpec from './setup/swagger-setup';
-
+import helmet from 'helmet'
 const port = process.env.PORT 
 const app: Application = express();
 
@@ -20,6 +20,14 @@ app.use(cors({
     credentials: true,
     origin: process.env.CLIENT_URL
 }))
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"], 
+      scriptSrc: ["'self'", "https://vercel.live"], 
+      imgSrc: ["'self'", "https://online-course-server-rho.vercel.app"],
+    },
+}));
+
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerSpec))
 app.use('/api', router)
 app.use(errorMiddleware)
