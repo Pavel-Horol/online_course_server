@@ -9,5 +9,7 @@ const router: Router = Router();
 router.use('/auth', authRouter)
 router.use('/posts', authMiddleware, postsRouter)
 router.use('/image', imageRouter)
-
+router.use('/test', (req, res) => {
+    res.send('Its working')
+})
 export default router
