@@ -1,5 +1,5 @@
-import { UserRole } from "@/enum/role.enum";
-import User from "@/types/user-type";
+import { UserRole } from "../enum/role.enum";
+import User from "../types/user-type";
 import { ObjectId } from "mongoose";
 
 class UserDto {

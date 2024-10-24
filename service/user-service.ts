@@ -1,6 +1,6 @@
-import { ApiError } from "@/exceptions/api-error"
-import userModel from "@/models/user-model"
-import User from "@/types/user-type";
+import { ApiError } from "../exceptions/api-error"
+import userModel from "../models/user-model"
+import User from "../types/user-type";
 import bcrypt from 'bcrypt';
 
 class UserService {

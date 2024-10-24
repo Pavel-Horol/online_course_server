@@ -1,7 +1,7 @@
-import { ApiError } from "@/exceptions/api-error"
-import userModel from "@/models/user-model"
+import { ApiError } from "../exceptions/api-error"
+import userModel from "../models/user-model"
 import tokenService from "./token-service"
-import UserDto from "@/dto/user-dto"
+import UserDto from "../dto/user-dto"
 import bcrypt from 'bcrypt';
 import { v4 } from 'uuid';
 import mailService from './mail-service';

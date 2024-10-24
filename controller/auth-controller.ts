@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import authService from "@/service/auth-service";
-import { AuthRequest } from "@/types/auth-type";
-import { setCookie } from "@/utilities/auth-utils";
+import authService from "../service/auth-service";
+import { AuthRequest } from "../types/auth-type";
+import { setCookie } from "../utilities/auth-utils";
 
 class AuthController {
     async registration(req: AuthRequest, res: Response, next: NextFunction) {

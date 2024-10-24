@@ -1,5 +1,5 @@
-import { UserRole } from '@/enum/role.enum';
-import User from '@/types/user-type';
+import { UserRole } from '../enum/role.enum';
+import User from '../types/user-type';
 import mongoose from 'mongoose'
 import { model, Schema, models } from "mongoose";
 

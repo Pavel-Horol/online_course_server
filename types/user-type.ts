@@ -1,4 +1,4 @@
-import { UserRole } from "@/enum/role.enum";
+import { UserRole } from "../enum/role.enum";
 import { ObjectId } from "mongoose";
 
 export default interface  User{
