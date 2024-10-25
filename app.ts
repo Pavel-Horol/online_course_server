@@ -20,7 +20,8 @@ app.use(cors({
     credentials: true,
     // origin: process.env.CLIENT_URL,
     origin: ['http://localhost:5173', 'https://online-course-client-inky.vercel.app'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE']
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
 }))
 app.use(helmet.contentSecurityPolicy({
     directives: {
